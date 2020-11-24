@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/adykarta/certificate-generator-backend#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "jimp": "^0.16.1"
   }
 }

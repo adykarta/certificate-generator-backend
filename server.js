@@ -1,7 +1,9 @@
+const certificate = require("./src/services/certificate");
 var express = require("express");
 var app = express();
 
 app.get("/", function (req, res) {
+  certificate.generateCertificate();
   res.status(200).send("Hello World!");
 });
 

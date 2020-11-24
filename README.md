@@ -75,7 +75,7 @@ git commit -m [commit-message]
 git push origin [branch-name]
 ```
 
-Dont forget to merge request to master branch!
+Dont forget to merge request to main branch!
 
 ## Meet the Team
 

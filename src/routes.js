@@ -1,11 +1,11 @@
 const multer = require("multer");
-const { uuidv4 } = require("uuidv4");
+const { v4 } = require("uuid");
 var storage = multer.diskStorage({
   // destination: function (req, file, cb) {
   //   cb(null, "uploads");
   // },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + "-" + Date.now() + "-" + uuidv4() + ".png");
+    cb(null, file.fieldname + "-" + Date.now() + "-" + v4() + ".png");
   },
 });
 

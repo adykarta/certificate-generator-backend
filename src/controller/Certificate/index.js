@@ -21,8 +21,10 @@ exports.generate = function (req, res) {
   }
 
   certificate.generate(imageData, data);
+
   res.json({
-    message: "hello",
+    message: "success",
+    data: [{ url: `${process.env.BASEURL}/files/${imageData.filename}.pdf` }],
   });
   res.end();
 };

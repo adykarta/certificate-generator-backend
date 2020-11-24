@@ -1,4 +1,20 @@
 const Jimp = require("jimp");
+const fs = require("fs");
+
+generatePdf = (width, height, filename, pdfname) => {
+  const PdfPrinter = require("pdfmake");
+  const printer = new PdfPrinter({});
+  const docDefinition = {
+    pageSize: { width: width, height: height },
+    pageMargins: [0, 0, 0, 0],
+    content: [{ image: "uploads/" + filename }],
+  };
+
+  const pdfDoc = printer.createPdfKitDocument(docDefinition);
+
+  pdfDoc.pipe(fs.createWriteStream("uploads/" + pdfname));
+  pdfDoc.end();
+};
 
 generate = async (img, data) => {
   const image = await Jimp.read(img.path);
@@ -8,10 +24,11 @@ generate = async (img, data) => {
   // );
   // const fontSmall = await Jimp.loadFont("src/assets/font/arial-small.ttf.fnt");
 
-  // const fullWidth = image.getWidth();
-  // const fullHeight = image.getHeight();
+  const fullWidth = image.getWidth();
+  const fullHeight = image.getHeight();
 
   const imageFileName = `${img.filename}.png`;
+  const pdfFileName = `${img.filename}.pdf`;
   data.forEach(async (element) => {
     // const nameWidth = Jimp.measureText(fontBig, element.data.text);
     const nameX = element.data.width;
@@ -20,6 +37,8 @@ generate = async (img, data) => {
   });
 
   await image.writeAsync("uploads/" + imageFileName);
+
+  generatePdf(fullWidth, fullHeight, imageFileName, pdfFileName);
 
   //   image.resize(842, 595);
 };

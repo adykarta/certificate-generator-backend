@@ -33,6 +33,7 @@ module.exports = function (app) {
   });
 
   app.route("/api/certificate/").post(certificate.generate);
+  app.route("/api/certificate/multiple").post(certificate.generateMultiple);
 
   app.route("/api/upload/").post(upload.single("file"), certificate.upload);
   app

@@ -2,6 +2,9 @@ const certificate = require("../../services/certificate");
 const cloudinary = require("cloudinary").v2;
 const excelToJson = require("convert-excel-to-json");
 const fs = require("fs");
+var JSZip = require("jszip");
+
+var request = require("request-promise").defaults({ encoding: null });
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -27,6 +30,55 @@ exports.generate = function (req, res) {
   res.json({
     message: "success",
     data: [{ url: `${process.env.BASEURL}/files/${imageData.filename}.pdf` }],
+  });
+  res.end();
+};
+
+exports.generateMultiple = async function (req, res) {
+  let image = req.body.image;
+  let imageData = JSON.parse(image);
+
+  const data = [];
+  for (let i = 1; i < 4; i++) {
+    let key = `item${i}`;
+    let current = req.body[key];
+    if (current !== null && current !== "" && current !== undefined) {
+      data.push({ id: key, data: JSON.parse(current) });
+    }
+  }
+
+  let totalData = JSON.parse(req.body["item1"]).text.length;
+
+  let result = [];
+  for (let i = 0; i < totalData; i++) {
+    const pdfName = await certificate.generateMultiple(imageData, data, i);
+    result.push({
+      url: `${process.env.BASEURL}/files/${pdfName}`,
+      fileName: pdfName,
+    });
+  }
+
+  var zip = new JSZip();
+
+  let PromiseArray = result.map((dataItem) => {
+    return request.get(dataItem.url);
+  });
+  let dataResult = await Promise.all(PromiseArray);
+  dataResult.map((element, index) => {
+    zip.file(result[index].fileName, element, { base64: true });
+  });
+
+  zip.generateAsync({ type: "nodebuffer" }).then((content) => {
+    fs.writeFileSync("uploads/output.zip", content);
+  });
+
+  result.push({
+    url: `${process.env.BASEURL}/files/output.zip`,
+    fileName: "output.zip",
+  });
+  res.json({
+    message: "success",
+    data: result,
   });
   res.end();
 };

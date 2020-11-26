@@ -98,6 +98,46 @@ Response:
 ```
 
 ```http
+POST /api/certificate/multiple
+```
+
+Request:
+
+```javascript
+{
+  "image" : '{"path":"https://res.cloudinary.com/dummy.png" ,"filename":"dummy"}',
+  "item1" : '{"text":["ahmad","lala","po"], "width":500, "height":200}',
+  "item2" : '{"text":["coo","cto","ceo"], "width":300, "height":300}'
+}
+```
+
+Response:
+
+```javascript
+{
+    "message": "success",
+    "data": [
+        {
+            "url": "http://localhost:8080/files/dummy1.pdf",
+            "fileName": "dummy1.pdf"
+        },
+        {
+            "url": "http://localhost:8080/files/dummy2.pdf",
+            "fileName": "dummy2.pdf"
+        },
+        {
+            "url": "http://localhost:8080/files/dummy3.pdf",
+            "fileName": "dummy3.pdf"
+        },
+        {
+            "url": "http://localhost:8080/files/output.zip",
+            "fileName": "output.zip"
+        }
+    ]
+}
+```
+
+```http
 GET /files/:filename
 ```
 

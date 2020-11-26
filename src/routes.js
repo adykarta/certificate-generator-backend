@@ -5,7 +5,17 @@ var storage = multer.diskStorage({
   //   cb(null, "uploads");
   // },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + "-" + Date.now() + "-" + v4() + ".png");
+    let type = file.originalname.split(".");
+    cb(
+      null,
+      file.fieldname +
+        "-" +
+        Date.now() +
+        "-" +
+        v4() +
+        "." +
+        type[type.length - 1]
+    );
   },
 });
 
@@ -25,5 +35,8 @@ module.exports = function (app) {
   app.route("/api/certificate/").post(certificate.generate);
 
   app.route("/api/upload/").post(upload.single("file"), certificate.upload);
+  app
+    .route("/api/upload/multiple/")
+    .post(upload.array("files", 2), certificate.uploadMultiple);
   app.route("/files/:name").get(utils.download);
 };

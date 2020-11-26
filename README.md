@@ -29,6 +29,51 @@ Response:
 ```
 
 ```http
+POST /api/upload/multiple
+```
+
+Request:
+
+```javascript
+{
+  "files" : excelFile,
+  "files" : jpgFile
+}
+```
+
+Response:
+
+```javascript
+{
+    "message": "success",
+    "data": {
+        "image": {
+            "path": "https://res.cloudinary.com/dovf8ri55/image/upload/dummy.png",
+            "filename": "dummy"
+        },
+        "excel": [
+            {
+                "header": "nama",
+                "data": [
+                    "ahmad",
+                    "lala",
+                    "po"
+                ]
+            },
+            {
+                "header": "jabatan",
+                "data": [
+                    "coo",
+                    "cto",
+                    "ceo"
+                ]
+            }
+        ]
+    }
+}
+```
+
+```http
 POST /api/certificate
 ```
 

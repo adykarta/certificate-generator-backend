@@ -1,5 +1,7 @@
 const certificate = require("../../services/certificate");
 const cloudinary = require("cloudinary").v2;
+const excelToJson = require("convert-excel-to-json");
+const fs = require("fs");
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -31,6 +33,7 @@ exports.generate = function (req, res) {
 
 exports.upload = function (req, res) {
   const image = req.file;
+
   cloudinary.uploader
     .upload(image.path)
     .then((result) => {
@@ -45,4 +48,68 @@ exports.upload = function (req, res) {
         error,
       });
     });
+};
+
+function readExcel(file) {
+  let data = [];
+  const result = excelToJson({
+    source: fs.readFileSync(file.path),
+    columnToKey: {
+      A: "{{A1}}",
+      B: "{{B1}}",
+      C: "{{C1}}",
+    },
+    header: {
+      rows: 1,
+    }, // fs.readFileSync return a Buffer
+  });
+  let resultSheet = result["Sheet1"];
+  let keys = Object.keys(resultSheet[0]);
+
+  for (let i = 0; i < keys.length; i++) {
+    let tempData = {};
+    let tempValues = [];
+
+    for (let j = 0; j < resultSheet.length; j++) {
+      tempValues.push(resultSheet[j][keys[i]]);
+    }
+    tempData["header"] = keys[i];
+    tempData["data"] = tempValues;
+    data.push(tempData);
+  }
+
+  return data.slice(0, 3);
+}
+
+exports.uploadMultiple = async function (req, res) {
+  const file = req.files;
+  const excel = file[0];
+  const image = file[1];
+  let data = {};
+
+  var setData = function (val) {
+    Object.assign(data, { image: val });
+  };
+
+  await cloudinary.uploader
+    .upload(image.path)
+    .then((result) => {
+      setData({
+        path: result.secure_url,
+        filename: result.original_filename,
+      });
+    })
+    .catch((error) => {
+      res.status(500).send({
+        message: "failed",
+        error,
+      });
+    });
+
+  const excelRes = readExcel(excel);
+  Object.assign(data, { excel: excelRes });
+  res.status(200).send({
+    message: "success",
+    data: data,
+  });
 };

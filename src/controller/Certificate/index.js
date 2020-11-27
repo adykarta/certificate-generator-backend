@@ -15,72 +15,96 @@ cloudinary.config({
 exports.generate = function (req, res) {
   let image = req.body.image;
   let imageData = JSON.parse(image);
-
-  const data = [];
-  for (let i = 1; i < 4; i++) {
-    let key = `item${i}`;
-    let current = req.body[key];
-    if (current !== null && current !== "" && current !== undefined) {
-      data.push({ id: key, data: JSON.parse(current) });
+  if (
+    typeof req.body["item1"] !== "string" ||
+    typeof req.body["item2"] !== "string" ||
+    typeof req.body["item3"] !== "string" ||
+    typeof image !== "string"
+  ) {
+    res.json({
+      message: "value must be string!",
+    });
+    res.end();
+  } else {
+    const data = [];
+    for (let i = 1; i < 4; i++) {
+      let key = `item${i}`;
+      let current = req.body[key];
+      if (current !== null && current !== "" && current !== undefined) {
+        data.push({ id: key, data: JSON.parse(current) });
+      }
     }
+
+    certificate.generate(imageData, data);
+
+    res.json({
+      message: "success",
+      data: [{ url: `${process.env.BASEURL}/files/${imageData.filename}.pdf` }],
+    });
+    res.end();
   }
-
-  certificate.generate(imageData, data);
-
-  res.json({
-    message: "success",
-    data: [{ url: `${process.env.BASEURL}/files/${imageData.filename}.pdf` }],
-  });
-  res.end();
 };
 
 exports.generateMultiple = async function (req, res) {
   let image = req.body.image;
-  let imageData = JSON.parse(image);
 
-  const data = [];
-  for (let i = 1; i < 4; i++) {
-    let key = `item${i}`;
-    let current = req.body[key];
-    if (current !== null && current !== "" && current !== undefined) {
-      data.push({ id: key, data: JSON.parse(current) });
-    }
-  }
-
-  let totalData = JSON.parse(req.body["item1"]).text.length;
-
-  let result = [];
-  for (let i = 0; i < totalData; i++) {
-    const pdfName = await certificate.generateMultiple(imageData, data, i);
-    result.push({
-      url: `${process.env.BASEURL}/files/${pdfName}`,
-      fileName: pdfName,
+  if (
+    typeof req.body["item1"] !== "string" ||
+    typeof req.body["item2"] !== "string" ||
+    typeof req.body["item3"] !== "string" ||
+    typeof image !== "string"
+  ) {
+    res.json({
+      message: "value must be string!",
     });
+    res.end();
+  } else {
+    let imageData = JSON.parse(image);
+
+    const data = [];
+    for (let i = 1; i < 4; i++) {
+      let key = `item${i}`;
+      let current = req.body[key];
+      if (current !== null && current !== "" && current !== undefined) {
+        data.push({ id: key, data: JSON.parse(current) });
+      }
+    }
+
+    let totalData = JSON.parse(req.body["item1"]).text.length;
+
+    let result = [];
+    for (let i = 0; i < totalData; i++) {
+      const pdfName = await certificate.generateMultiple(imageData, data, i);
+      result.push({
+        url: `${process.env.BASEURL}/files/${pdfName}`,
+        fileName: pdfName,
+      });
+    }
+
+    var zip = new JSZip();
+
+    let PromiseArray = result.map((dataItem) => {
+      return request.get(dataItem.url);
+    });
+    let dataResult = await Promise.all(PromiseArray);
+    dataResult.map((element, index) => {
+      zip.file(result[index].fileName, element, { base64: true });
+    });
+
+    zip.generateAsync({ type: "nodebuffer" }).then((content) => {
+      fs.writeFileSync("uploads/output.zip", content);
+    });
+
+    result.push({
+      url: `${process.env.BASEURL}/files/output.zip`,
+      fileName: "output.zip",
+    });
+    res.json({
+      message: "success",
+      data: result,
+    });
+    res.end();
   }
-
-  var zip = new JSZip();
-
-  let PromiseArray = result.map((dataItem) => {
-    return request.get(dataItem.url);
-  });
-  let dataResult = await Promise.all(PromiseArray);
-  dataResult.map((element, index) => {
-    zip.file(result[index].fileName, element, { base64: true });
-  });
-
-  zip.generateAsync({ type: "nodebuffer" }).then((content) => {
-    fs.writeFileSync("uploads/output.zip", content);
-  });
-
-  result.push({
-    url: `${process.env.BASEURL}/files/output.zip`,
-    fileName: "output.zip",
-  });
-  res.json({
-    message: "success",
-    data: result,
-  });
-  res.end();
 };
 
 exports.upload = function (req, res) {

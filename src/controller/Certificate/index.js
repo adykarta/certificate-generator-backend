@@ -21,11 +21,6 @@ exports.generate = function (req, res) {
     typeof req.body["item3"] !== "string" ||
     typeof image !== "string"
   ) {
-    res.json({
-      message: "value must be string!",
-    });
-    res.end();
-  } else {
     const data = [];
     for (let i = 1; i < 4; i++) {
       let key = `item${i}`;
@@ -42,6 +37,11 @@ exports.generate = function (req, res) {
       data: [{ url: `${process.env.BASEURL}/files/${imageData.filename}.pdf` }],
     });
     res.end();
+  } else {
+    res.json({
+      message: "value must be string!",
+    });
+    res.end();
   }
 };
 
@@ -49,16 +49,11 @@ exports.generateMultiple = async function (req, res) {
   let image = req.body.image;
 
   if (
-    typeof req.body["item1"] !== "string" ||
-    typeof req.body["item2"] !== "string" ||
-    typeof req.body["item3"] !== "string" ||
-    typeof image !== "string"
+    typeof req.body["item1"] === "string" &&
+    typeof req.body["item2"] === "string" &&
+    typeof req.body["item3"] === "string" &&
+    typeof image === "string"
   ) {
-    res.json({
-      message: "value must be string!",
-    });
-    res.end();
-  } else {
     let imageData = JSON.parse(image);
 
     const data = [];
@@ -102,6 +97,11 @@ exports.generateMultiple = async function (req, res) {
     res.json({
       message: "success",
       data: result,
+    });
+    res.end();
+  } else {
+    res.json({
+      message: "value must be string!",
     });
     res.end();
   }

@@ -15,6 +15,7 @@ cloudinary.config({
 exports.generate = function (req, res) {
   let image = req.body.image;
   let imageData = JSON.parse(image);
+
   if (
     typeof req.body["item1"] !== "string" ||
     typeof req.body["item2"] !== "string" ||

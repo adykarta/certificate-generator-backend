@@ -24,16 +24,18 @@ generate = async (img, data) => {
   //   "src/assets/font/arial-medium.ttf.fnt"
   // );
   // const fontSmall = await Jimp.loadFont("src/assets/font/arial-small.ttf.fnt");
-
+  await image.resize(842, 595);
   const fullWidth = image.getWidth();
   const fullHeight = image.getHeight();
 
   const imageFileName = `${img.filename}.png`;
   const pdfFileName = `${img.filename}.pdf`;
+
   data.forEach(async (element) => {
     // const nameWidth = Jimp.measureText(fontBig, element.data.text);
     const nameX = element.data.width;
     const nameY = element.data.height;
+
     await image.print(fontBig, nameX, nameY, element.data.text).quality(60);
   });
 
@@ -51,12 +53,13 @@ generateMultiple = async (img, data, idx) => {
   //   "src/assets/font/arial-medium.ttf.fnt"
   // );
   // const fontSmall = await Jimp.loadFont("src/assets/font/arial-small.ttf.fnt");
-
+  await image.resize(842, 595);
   const fullWidth = image.getWidth();
   const fullHeight = image.getHeight();
 
   const imageFileName = `${img.filename + v4()}.png`;
   const pdfFileName = `${img.filename + v4()}.pdf`;
+
   data.forEach(async (element) => {
     // const nameWidth = Jimp.measureText(fontBig, element.data.text);
     const nameX = element.data.width;

@@ -30,7 +30,7 @@ exports.generate = function (req, res) {
         data.push({ id: key, data: JSON.parse(current) });
       }
     }
-
+    console.log(data);
     certificate.generate(imageData, data);
 
     res.json({

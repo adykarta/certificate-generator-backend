@@ -8,6 +8,7 @@ var app = express();
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.get("/", function (req, res) {
   res.status(200).send("Hello World!");

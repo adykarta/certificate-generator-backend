@@ -19,10 +19,10 @@ generatePdf = (width, height, filename, pdfname) => {
 
 generate = async (img, data) => {
   const image = await Jimp.read(img.path);
-  const fontBig = await Jimp.loadFont("src/assets/font/arial-big.ttf.fnt");
-  // const fontMedium = await Jimp.loadFont(
-  //   "src/assets/font/arial-medium.ttf.fnt"
-  // );
+  // const fontBig = await Jimp.loadFont("src/assets/font/arial-big.ttf.fnt");
+  const fontMedium = await Jimp.loadFont(
+    "src/assets/font/arial-medium.ttf.fnt"
+  );
   // const fontSmall = await Jimp.loadFont("src/assets/font/arial-small.ttf.fnt");
   await image.resize(842, 595);
   const fullWidth = image.getWidth();
@@ -36,7 +36,7 @@ generate = async (img, data) => {
     const nameX = element.data.width;
     const nameY = element.data.height;
 
-    await image.print(fontBig, nameX, nameY, element.data.text).quality(60);
+    await image.print(fontMedium, nameX, nameY, element.data.text).quality(60);
   });
 
   await image.writeAsync("uploads/" + imageFileName);
@@ -48,10 +48,10 @@ generate = async (img, data) => {
 
 generateMultiple = async (img, data, idx) => {
   const image = await Jimp.read(img.path);
-  const fontBig = await Jimp.loadFont("src/assets/font/arial-big.ttf.fnt");
-  // const fontMedium = await Jimp.loadFont(
-  //   "src/assets/font/arial-medium.ttf.fnt"
-  // );
+  // const fontBig = await Jimp.loadFont("src/assets/font/arial-big.ttf.fnt");
+  const fontMedium = await Jimp.loadFont(
+    "src/assets/font/arial-medium.ttf.fnt"
+  );
   // const fontSmall = await Jimp.loadFont("src/assets/font/arial-small.ttf.fnt");
   await image.resize(842, 595);
   const fullWidth = image.getWidth();
@@ -65,7 +65,7 @@ generateMultiple = async (img, data, idx) => {
     const nameX = element.data.width;
     const nameY = element.data.height;
     await image
-      .print(fontBig, nameX, nameY, element.data.text[idx])
+      .print(fontMedium, nameX, nameY, element.data.text[idx])
       .quality(60);
   });
 

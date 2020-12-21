@@ -90,14 +90,14 @@ exports.generateMultiple = async function (req, res) {
     zip.generateAsync({ type: "nodebuffer" }).then((content) => {
       fs.writeFileSync("uploads/output.zip", content);
     });
-
-    result.push({
+    finalData = [];
+    finalData.push({
       url: `${process.env.BASEURL}/files/output.zip`,
       fileName: "output.zip",
     });
     res.json({
       message: "success",
-      data: result,
+      data: finalData,
     });
     res.end();
   } else {

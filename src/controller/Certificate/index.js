@@ -6,6 +6,7 @@ var sleep = require("sleep");
 // var JSZip = require("jszip");
 var async = require("async");
 var AdmZip = require("adm-zip");
+var zip = require("node-native-zip");
 
 var request = require("request-promise").defaults({ encoding: null });
 
@@ -74,26 +75,38 @@ exports.generateMultiple = async function (req, res) {
     for (let i = 0; i < totalData; i++) {
       const pdfName = await certificate.generateMultiple(imageData, data, i);
       result.push({
-        url: `${process.env.BASEURL}/files/${pdfName}`,
-        fileName: pdfName,
+        path: `./uploads/${pdfName}`,
+        name: pdfName,
       });
     }
     await new Promise((resolve) => setTimeout(resolve, totalData * 3));
+    //node-native-zip
+    var archive = new zip();
+
+    archive.addFiles(result, function (err) {
+      if (err) return console.log("err while adding files", err);
+
+      var buff = archive.toBuffer();
+
+      fs.writeFile("./uploads/test.zip", buff, function () {
+        console.log("Finished");
+      });
+    });
     //adm-zip
-    var zip = new AdmZip();
-    let PromiseArray = result.map((dataItem) => {
-      return request.get(dataItem.url);
-    });
+    // var zip = new AdmZip();
+    // let PromiseArray = result.map((dataItem) => {
+    //   return request.get(dataItem.url);
+    // });
 
-    let dataResult = await Promise.all(PromiseArray);
+    // let dataResult = await Promise.all(PromiseArray);
 
-    dataResult.map((element, index) => {
-      zip.addFile(
-        result[index].fileName,
-        Buffer.alloc(element.length, element)
-      );
-    });
-    zip.writeZip("uploads/zipfinal.zip");
+    // dataResult.map((element, index) => {
+    //   zip.addFile(
+    //     result[index].fileName,
+    //     Buffer.alloc(element.length, element)
+    //   );
+    // });
+    // zip.writeZip("uploads/zipfinal.zip");
     //jszip
 
     // var zip = new JSZip();
@@ -116,8 +129,8 @@ exports.generateMultiple = async function (req, res) {
     // });
     finalData = [];
     finalData.push({
-      url: `${process.env.BASEURL}/files/zipfinal.zip`,
-      fileName: "zipfinal.zip",
+      url: `${process.env.BASEURL}/files/test.zip`,
+      fileName: "test.zip",
       totalFile: totalData,
     });
     res.json({

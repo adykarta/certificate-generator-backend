@@ -78,7 +78,7 @@ exports.generateMultiple = async function (req, res) {
         fileName: pdfName,
       });
     }
-    await new Promise((resolve) => setTimeout(resolve, totalData * 3));
+    await new Promise((resolve) => setTimeout(resolve, totalData * 3000));
     //adm-zip
     var zip = new AdmZip();
     let PromiseArray = result.map((dataItem) => {

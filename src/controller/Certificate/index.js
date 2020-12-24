@@ -118,6 +118,7 @@ exports.generateMultiple = async function (req, res) {
     finalData.push({
       url: `${process.env.BASEURL}/files/zipfinal.zip`,
       fileName: "zipfinal.zip",
+      totalFile: totalData,
     });
     res.json({
       message: "success",

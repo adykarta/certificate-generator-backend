@@ -2,7 +2,10 @@ const certificate = require("../../services/certificate");
 const cloudinary = require("cloudinary").v2;
 const excelToJson = require("convert-excel-to-json");
 const fs = require("fs");
-var JSZip = require("jszip");
+var sleep = require("sleep");
+// var JSZip = require("jszip");
+var async = require("async");
+var AdmZip = require("adm-zip");
 
 var request = require("request-promise").defaults({ encoding: null });
 
@@ -67,7 +70,6 @@ exports.generateMultiple = async function (req, res) {
     }
 
     let totalData = JSON.parse(req.body["item1"]).text.length;
-
     let result = [];
     for (let i = 0; i < totalData; i++) {
       const pdfName = await certificate.generateMultiple(imageData, data, i);
@@ -76,24 +78,46 @@ exports.generateMultiple = async function (req, res) {
         fileName: pdfName,
       });
     }
-
-    var zip = new JSZip();
-
+    await new Promise((resolve) => setTimeout(resolve, totalData * 3));
+    //adm-zip
+    var zip = new AdmZip();
     let PromiseArray = result.map((dataItem) => {
       return request.get(dataItem.url);
     });
-    let dataResult = await Promise.all(PromiseArray);
-    dataResult.map((element, index) => {
-      zip.file(result[index].fileName, element, { base64: true });
-    });
 
-    zip.generateAsync({ type: "nodebuffer" }).then((content) => {
-      fs.writeFileSync("uploads/output.zip", content);
+    let dataResult = await Promise.all(PromiseArray);
+
+    dataResult.map((element, index) => {
+      zip.addFile(
+        result[index].fileName,
+        Buffer.alloc(element.length, element)
+      );
     });
+    zip.writeZip("uploads/zipfinal.zip");
+    //jszip
+
+    // var zip = new JSZip();
+
+    // let PromiseArray = result.map((dataItem) => {
+    //   return request.get(dataItem.url);
+    // });
+    // let dataResult = await Promise.all(PromiseArray);
+
+    // dataResult.map((element, index) => {
+    //   zip.file(result[index].fileName, element, {
+    //     base64: true,
+    //     binary: true,
+    //     compression: "DEFLATE",
+    //   });
+    // });
+
+    // zip.generateAsync({ type: "nodebuffer" }).then((content) => {
+    //   fs.writeFileSync("uploads/output.zip", content);
+    // });
     finalData = [];
     finalData.push({
-      url: `${process.env.BASEURL}/files/output.zip`,
-      fileName: "output.zip",
+      url: `${process.env.BASEURL}/files/zipfinal.zip`,
+      fileName: "zipfinal.zip",
     });
     res.json({
       message: "success",

@@ -118,20 +118,9 @@ Response:
     "message": "success",
     "data": [
         {
-            "url": "http://localhost:8080/files/dummy1.pdf",
-            "fileName": "dummy1.pdf"
-        },
-        {
-            "url": "http://localhost:8080/files/dummy2.pdf",
-            "fileName": "dummy2.pdf"
-        },
-        {
-            "url": "http://localhost:8080/files/dummy3.pdf",
-            "fileName": "dummy3.pdf"
-        },
-        {
             "url": "http://localhost:8080/files/output.zip",
-            "fileName": "output.zip"
+            "fileName": "output.zip",
+            "totalFile":3
         }
     ]
 }

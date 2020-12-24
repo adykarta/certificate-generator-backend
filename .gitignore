@@ -2,13 +2,16 @@
 
 node_modules
 .env
+uploads
 /.env
 #media
 
 
 # dependencies
+/uploads
 /node_modules
 /.pnp
+
 .pnp.js
 
 # testing
